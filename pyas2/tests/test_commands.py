@@ -9,9 +9,9 @@ from django.core import management
 from django.core.files.base import ContentFile
 
 from pyas2 import settings as app_settings
+from pyas2.management.commands.sendas2bulk import Command as SendBulkCommand
 from pyas2.models import As2Message, Message, Mdn
 from pyas2.tests import TEST_DIR
-from pyas2.management.commands.sendas2bulk import Command as SendBulkCommand
 
 
 @pytest.mark.django_db
@@ -106,7 +106,7 @@ def test_manageserver_command(mocker, organization, partner):
     out_message, _ = Message.objects.create_from_as2message(
         as2message=as2message, payload=payload, direction="OUT", status="P"
     )
-    out_message.send_message(as2message.headers, as2message.content)
+    out_message.send_message(as2message)
 
     # Test the retry command
     out_message.refresh_from_db()

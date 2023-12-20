@@ -5,17 +5,18 @@ from django.contrib import messages
 from django.shortcuts import Http404
 from django.shortcuts import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
-from django.urls import reverse_lazy
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView
-from pyas2lib import Message as As2Message
 from pyas2lib import Mdn as As2Mdn
+from pyas2lib import Message as As2Message
 from pyas2lib.exceptions import DuplicateDocument
 
+from pyas2.forms import SendAs2MessageForm
 from pyas2.models import Mdn
 from pyas2.models import Message
 from pyas2.models import Organization
@@ -24,7 +25,6 @@ from pyas2.models import PrivateKey
 from pyas2.models import PublicCertificate
 from pyas2.utils import run_post_receive
 from pyas2.utils import run_post_send
-from pyas2.forms import SendAs2MessageForm
 
 logger = logging.getLogger("pyas2")
 
@@ -238,7 +238,7 @@ class SendAs2Message(FormView):
             direction="OUT",
             status="P",
         )
-        message.send_message(as2message.headers, as2message.content)
+        message.send_message(as2message)
         if message.status in ["S", "P"]:
             messages.success(
                 self.request, "Message has been successfully send to Partner."

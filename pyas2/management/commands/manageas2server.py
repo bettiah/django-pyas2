@@ -20,7 +20,6 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             "--clean",
             action="store_true",
@@ -79,10 +78,9 @@ class Command(BaseCommand):
             subject=retry_msg.partner.subject,
             content_type=retry_msg.partner.content_type,
         )
-        retry_msg.send_message(as2message.headers, as2message.content)
+        retry_msg.send_message(as2message)
 
     def handle(self, *args, **options):
-
         if options["retry"]:
             self.stdout.write("Retrying all failed outbound messages")
             # Get the list of all messages with status retry

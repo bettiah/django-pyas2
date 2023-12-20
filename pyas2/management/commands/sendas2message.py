@@ -1,9 +1,9 @@
 import logging
 import os
 
+from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
 from django.core.management.base import CommandError
-from django.core.files.storage import default_storage
 from pyas2lib import Message as AS2Message
 
 from pyas2.models import Message
@@ -33,7 +33,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         # Check if organization and partner exists
         try:
             org = Organization.objects.get(as2_name=options["org_as2name"])
@@ -73,7 +72,7 @@ class Command(BaseCommand):
             direction="OUT",
             status="P",
         )
-        message.send_message(as2message.headers, as2message.content)
+        message.send_message(as2message)
 
         # Delete original file if option is set
         if options["delete"]:

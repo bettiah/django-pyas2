@@ -12,7 +12,6 @@ from django.core.files.storage import default_storage
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
-
 from pyas2lib import (
     Mdn as As2Mdn,
     Message as As2Message,
@@ -458,7 +457,7 @@ class Message(models.Model):
         else:
             return "admin/img/icon-unknown.svg"
 
-    def send_message(self, header, payload):
+    def send_message(self, raw_msg: As2Message):
         """Send the message to the partner"""
         logger.info(
             f'Sending message {self.message_id} from organization "{self.organization}" '
@@ -475,8 +474,8 @@ class Message(models.Model):
             response = requests.post(
                 self.partner.target_url,
                 auth=auth,
-                headers=header,
-                data=payload,
+                headers=raw_msg.headers,
+                data=raw_msg.content,
                 verify=self.partner.https_verify_ssl,
             )
             response.raise_for_status()
@@ -517,7 +516,7 @@ class Message(models.Model):
                 )
                 as2mdn = As2Mdn()
                 mdn_status, mdn_detailed_status = as2mdn.parse(
-                    mdn_content, lambda x, y: self.as2message
+                    mdn_content, lambda x, y: raw_msg
                 )
 
                 # Update the message status and return the response

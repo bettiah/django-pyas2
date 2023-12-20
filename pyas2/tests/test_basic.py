@@ -3,6 +3,7 @@ from email.parser import HeaderParser
 from unittest import mock
 
 from django.test import TestCase, Client
+from pyas2lib.as2 import Message as As2Message
 from requests import Response
 from requests.exceptions import RequestException
 
@@ -15,8 +16,6 @@ from pyas2.models import (
     Mdn,
 )
 from pyas2.tests import TEST_DIR
-
-from pyas2lib.as2 import Message as As2Message
 
 
 class BasicServerClientTestCase(TestCase):
@@ -551,7 +550,7 @@ class BasicServerClientTestCase(TestCase):
         )
 
         mock_request.side_effect = SendMessageMock(self.client)
-        in_message.send_message(as2message.headers, as2message.content)
+        in_message.send_message(as2message)
 
         return in_message
 

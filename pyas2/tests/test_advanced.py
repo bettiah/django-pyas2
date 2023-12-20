@@ -4,18 +4,18 @@ from unittest import mock
 
 from django.test import Client, override_settings
 from django.test import TestCase
-from pyas2lib import Message as As2Message
 from pyas2lib import Mdn as As2Mdn
+from pyas2lib import Message as As2Message
 
 from pyas2 import settings
-from pyas2.models import Message
 from pyas2.models import Mdn
+from pyas2.models import Message
 from pyas2.models import Organization
 from pyas2.models import Partner
 from pyas2.models import PrivateKey
 from pyas2.models import PublicCertificate
-from pyas2.tests.test_basic import SendMessageMock
 from pyas2.tests import TEST_DIR
+from pyas2.tests.test_basic import SendMessageMock
 
 
 class AdvancedTestCases(TestCase):
@@ -40,7 +40,6 @@ class AdvancedTestCases(TestCase):
             cls.client_crt = PublicCertificate.objects.create(certificate=fp.read())
 
     def setUp(self):
-
         # Setup the server organization and partner
         Organization.objects.create(
             name="AS2 Server",
@@ -274,7 +273,7 @@ class AdvancedTestCases(TestCase):
         )
 
         mock_request.side_effect = SendMessageMock(self.client)
-        in_message.send_message(as2message.headers, as2message.content)
+        in_message.send_message(as2message)
 
         # Check the status of the message
         self.assertEqual(in_message.status, "S")
@@ -284,7 +283,7 @@ class AdvancedTestCases(TestCase):
         self.assertEqual(out_message.status, "S")
 
         # send it again to cause duplicate error
-        in_message.send_message(as2message.headers, as2message.content)
+        in_message.send_message(as2message)
 
         # Make sure out message was created
         self.assertEqual(in_message.status, "E")
@@ -495,10 +494,7 @@ class AdvancedTestCases(TestCase):
             as2message=as2message, payload=self.payload, direction="OUT", status="P"
         )
         mock_request.side_effect = SendMessageMock(self.client)
-        out_message.send_message(
-            as2message.headers,
-            b"xxxx" + as2message.content if smudge else as2message.content,
-        )
+        out_message.send_message(as2message)
 
         return out_message
 
